@@ -1,0 +1,38 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tree Free - Главная{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header text-center">
+                <h1 class="mb-0">Добро пожаловать в Tree Free</h1>
+            </div>
+            <div class="card-body">
+                <p class="text-center">Платформа для озеленения городов и садов</p>
+                
+                <div class="main-menu">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <a href="{% url 'plant_tree' %}" class="btn main-menu-btn w-100">
+                                Я хочу посадить дерево
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{% url 'my_land' %}" class="btn main-menu-btn w-100">
+                                У меня есть участок для посадки деревьев
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{% url 'sell_trees' %}" class="btn main-menu-btn w-100">
+                                Продаю и сажаю деревья
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tree Free - Поставщики услуг{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h2>Поставщики услуг по посадке деревьев</h2>
+            </div>
+            <div class="card-body">
+                <!-- Поиск -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <form method="GET" class="row g-3">
+                                    <div class="col-md-8">
+                                        <input type="text" name="search" class="form-control" placeholder="Введите название или описание услуги..." value="{{ request.GET.search|default:'' }}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-primary w-100">Найти</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Список поставщиков -->
+                {% if providers %}
+                <div class="row">
+                    {% for provider in providers %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-light p-3 rounded-circle me-3">
+                                        <i class="bi bi-person" style="font-size: 2rem; color: #2E7D32;"></i>
+                                    </div>
+                                    <div>
+                                        <h4>{{ provider.name }}</h4>
+                                        <p class="text-muted mb-0">
+                                            <i class="bi bi-telephone"></i> {{ provider.contact_phone }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <p>{{ provider.description }}</p>
+                                <p class="text-muted"><small>С нами с {{ provider.created_at|date:"d.m.Y" }}</small></p>
+                            </div>
+                            <div class="card-footer">
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#contactModal{{ provider.id }}">
+                                    Связаться
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Модальное окно для связи с поставщиком -->
+                        <div class="modal fade" id="contactModal{{ provider.id }}" tabindex="-1" aria-labelledby="contactModalLabel{{ provider.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="contactModalLabel{{ provider.id }}">Связаться с {{ provider.name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Вы можете связаться с поставщиком услуг по следующим контактам:</p>
+                                        <ul class="list-group">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Телефон
+                                                <span><a href="tel:{{ provider.contact_phone }}">{{ provider.contact_phone }}</a></span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Пользователь
+                                                <span>{{ provider.user.get_full_name|default:provider.user.username }}</span>
+                                            </li>
+                                        </ul>
+                                        
+                                        <div class="mt-4">
+                                            <form method="POST" action="{% url 'contact_provider' provider.id %}">
+                                                {% csrf_token %}
+                                                <div class="mb-3">
+                                                    <label for="message{{ provider.id }}" class="form-label">Отправить сообщение</label>
+                                                    <textarea name="message" id="message{{ provider.id }}" class="form-control" rows="4" placeholder="Введите ваше сообщение..."></textarea>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Отправить сообщение</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Пагинация -->
+                {% if providers.has_other_pages %}
+                <nav aria-label="Навигация по страницам">
+                    <ul class="pagination justify-content-center">
+                        {% if providers.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" aria-label="В начало">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ providers.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" aria-label="Предыдущая">
+                                <span aria-hidden="true">&lsaquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in providers.paginator.page_range %}
+                            {% if providers.number == num %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% elif num > providers.number|add:'-3' and num < providers.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if providers.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ providers.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" aria-label="Следующая">
+                                <span aria-hidden="true">&rsaquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ providers.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" aria-label="В конец">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                {% else %}
+                <div class="text-center my-5">
+                    <p>На данный момент нет зарегистрированных поставщиков услуг.</p>
+                    <a href="{% url 'sell_trees' %}" class="btn btn-primary">Стать поставщиком услуг</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

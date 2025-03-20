@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tree Free - Добавление участка{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Добавление участка для посадки</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_site_type" class="form-label">Тип участка</label>
+                        {{ form.site_type }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_image" class="form-label">Фотография участка</label>
+                        {{ form.image }}
+                        <div class="form-text">Загрузите фотографию вашего участка для посадки деревьев.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_location" class="form-label">Местоположение</label>
+                        {{ form.location }}
+                        <div class="form-text">Укажите адрес или координаты вашего участка.</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'my_land' %}" class="btn btn-outline-primary">Назад</a>
+                        <button type="submit" class="btn btn-primary">Продолжить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

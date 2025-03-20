@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tree Free - Выбор вида дерева для участка{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Выберите вид дерева для вашего участка</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        {% for tree_type in tree_types %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                <img src="{{ tree_type.image.url }}" class="card-img-top" alt="{{ tree_type.name }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ tree_type.name }}</h5>
+                                    <p class="card-text">{{ tree_type.description|truncatechars:100 }}</p>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="tree_type" id="land_tree_type_{{ tree_type.id }}" value="{{ tree_type.id }}" required>
+                                        <label class="form-check-label" for="land_tree_type_{{ tree_type.id }}">
+                                            Выбрать этот вид
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'my_land' %}" class="btn btn-outline-primary">Назад</a>
+                        <button type="submit" class="btn btn-primary">Продолжить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tree Free - Профиль{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Мой профиль</h3>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ user.get_full_name }}</h5>
+                <p class="text-muted">@{{ user.username }}</p>
+                <p><i class="bi bi-envelope"></i> {{ user.email }}</p>
+                <hr>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ u_form.username.id_for_label }}" class="form-label">Имя пользователя</label>
+                        {{ u_form.username }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ u_form.email.id_for_label }}" class="form-label">Email</label>
+                        {{ u_form.email }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ u_form.first_name.id_for_label }}" class="form-label">Имя</label>
+                        {{ u_form.first_name }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ u_form.last_name.id_for_label }}" class="form-label">Фамилия</label>
+                        {{ u_form.last_name }}
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Обновить профиль</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Блок с коинами -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Мои коины</h3>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="bg-success text-white p-3 rounded-circle me-3">
+                        <i class="bi bi-coin" style="font-size: 2rem;"></i>
+                    </div>
+                    <div>
+                        <h2 class="mb-0">{{ user.profile.coins }}</h2>
+                        <p class="text-muted mb-0">коинов</p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <p>Вы получаете коинов за каждое посаженное дерево после подтверждения администратором.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <!-- Мои запросы на посадку деревьев -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Мои запросы на посадку деревьев</h3>
+            </div>
+            <div class="card-body">
+                {% if planting_requests %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Вид дерева</th>
+                                <th>Количество</th>
+                                <th>Цена</th>
+                                <th>Статус</th>
+                                <th>Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in planting_requests %}
+                            <tr>
+                                <td>{{ request.tree_type.name }}</td>
+                                <td>{{ request.quantity }}</td>
+                                <td>{{ request.price_per_tree }}</td>
+                                <td>
+                                    {% if request.status == 'pending' %}
+                                    <span class="badge bg-warning">В ожидании</span>
+                                    {% elif request.status == 'approved' %}
+                                    <span class="badge bg-success">Одобрено</span>
+                                    {% elif request.status == 'completed' %}
+                                    <span class="badge bg-primary">Завершено</span>
+                                    {% elif request.status == 'rejected' %}
+                                    <span class="badge bg-danger">Отклонено</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ request.created_at|date:"d.m.Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>У вас пока нет запросов на посадку деревьев.</p>
+                <a href="{% url 'plant_tree' %}" class="btn btn-primary">Создать запрос</a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Мои участки для посадки -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Мои участки для посадки</h3>
+            </div>
+            <div class="card-body">
+                {% if planting_sites %}
+                <div class="row">
+                    {% for site in planting_sites %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <img src="{{ site.image.url }}" class="card-img-top" alt="Участок">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ site.get_site_type_display }}</h5>
+                                <p class="card-text">{{ site.location }}</p>
+                                <p class="text-muted">Добавлен: {{ site.created_at|date:"d.m.Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>У вас пока нет добавленных участков.</p>
+                <a href="{% url 'my_land' %}" class="btn btn-primary">Добавить участок</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

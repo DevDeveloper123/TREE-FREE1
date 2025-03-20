@@ -1,0 +1,175 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tree Free - Мои участки{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2>Мои участки для посадки</h2>
+                <a href="{% url 'my_land' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Добавить участок
+                </a>
+            </div>
+            <div class="card-body">
+                <!-- Фильтры -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <form method="GET" class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="site_type" class="form-label">Тип участка</label>
+                                        <select name="site_type" id="site_type" class="form-select">
+                                            <option value="">Все типы</option>
+                                            <option value="yard" {% if request.GET.site_type == 'yard' %}selected{% endif %}>Мой двор</option>
+                                            <option value="public" {% if request.GET.site_type == 'public' %}selected{% endif %}>Территория, требующая улучшения</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="search" class="form-label">Поиск по адресу</label>
+                                        <input type="text" name="search" id="search" class="form-control" placeholder="Введите адрес..." value="{{ request.GET.search|default:'' }}">
+                                    </div>
+                                    <div class="col-md-4 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary w-100">Применить фильтры</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Список участков -->
+                {% if planting_sites %}
+                <div class="row">
+                    {% for site in planting_sites %}
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="card h-100">
+                            <img src="{{ site.image.url }}" class="card-img-top" alt="Участок" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ site.get_site_type_display }}</h5>
+                                <p class="card-text">{{ site.location }}</p>
+                                <p class="text-muted">Добавлен: {{ site.created_at|date:"d.m.Y" }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#siteModal{{ site.id }}">Подробнее</a>
+                                <a href="{% url 'plant_tree' %}?site_id={{ site.id }}" class="btn btn-sm btn-success">Посадить деревья</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Модальное окно с подробной информацией -->
+                        <div class="modal fade" id="siteModal{{ site.id }}" tabindex="-1" aria-labelledby="siteModalLabel{{ site.id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="siteModalLabel{{ site.id }}">{{ site.get_site_type_display }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <img src="{{ site.image.url }}" class="img-fluid rounded" alt="Участок">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h5>Информация об участке</h5>
+                                                <ul class="list-group">
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        Тип участка
+                                                        <span>{{ site.get_site_type_display }}</span>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        Местоположение
+                                                        <span>{{ site.location }}</span>
+                                                    </li>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        Дата добавления
+                                                        <span>{{ site.created_at|date:"d.m.Y" }}</span>
+                                                    </li>
+                                                </ul>
+                                                
+                                                <!-- Запросы, связанные с этим участком -->
+                                                <h5 class="mt-4">Связанные запросы</h5>
+                                                {% with related_requests=site.treeplantingrequest_set.all %}
+                                                {% if related_requests %}
+                                                <ul class="list-group">
+                                                    {% for req in related_requests %}
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        {{ req.quantity }} {{ req.tree_type.name }}
+                                                        <span class="badge {% if req.status == 'pending' %}bg-warning{% elif req.status == 'approved' %}bg-success{% elif req.status == 'completed' %}bg-primary{% elif req.status == 'rejected' %}bg-danger{% endif %}">
+                                                            {{ req.get_status_display }}
+                                                        </span>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                                {% else %}
+                                                <p class="text-muted">Нет связанных запросов</p>
+                                                {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                        <a href="{% url 'plant_tree' %}?site_id={{ site.id }}" class="btn btn-success">Посадить деревья</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Пагинация -->
+                {% if planting_sites.has_other_pages %}
+                <nav aria-label="Навигация по страницам">
+                    <ul class="pagination justify-content-center">
+                        {% if planting_sites.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.site_type %}&site_type={{ request.GET.site_type }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" aria-label="В начало">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ planting_sites.previous_page_number }}{% if request.GET.site_type %}&site_type={{ request.GET.site_type }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" aria-label="Предыдущая">
+                                <span aria-hidden="true">&lsaquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in planting_sites.paginator.page_range %}
+                            {% if planting_sites.number == num %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                            {% elif num > planting_sites.number|add:'-3' and num < planting_sites.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.site_type %}&site_type={{ request.GET.site_type }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if planting_sites.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ planting_sites.next_page_number }}{% if request.GET.site_type %}&site_type={{ request.GET.site_type }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" aria-label="Следующая">
+                                <span aria-hidden="true">&rsaquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ planting_sites.paginator.num_pages }}{% if request.GET.site_type %}&site_type={{ request.GET.site_type }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" aria-label="В конец">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                {% else %}
+                <div class="text-center my-5">
+                    <p>У вас пока нет добавленных участков.</p>
+                    <a href="{% url 'my_land' %}" class="btn btn-primary">Добавить участок</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 60">
+  <!-- Зеленый фон -->
+  <rect width="300" height="60" fill="#2E7D32"/>
+  
+  <!-- Иконка дерева (увеличенная) -->
+  <circle cx="40" cy="30" r="20" fill="#FFFFFF"/>
+  <rect x="36" y="37" width="8" height="18" fill="#FFFFFF"/>
+  <path d="M27 28 L40 10 L53 28 Z" fill="#FFFFFF"/>
+  
+  <!-- Текст "Tree Free" (увеличенный) -->
+  <text x="70" y="38" font-family="Arial, sans-serif" font-size="30" font-weight="bold" fill="#FFFFFF">Tree Free</text>
+</svg>

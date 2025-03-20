@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tree Free - Я хочу посадить дерево{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Я хочу посадить дерево</h2>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <a href="{% url 'select_tree_type' %}" class="btn main-menu-btn w-100">
+                            Вид дерева
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'select_planting_site' %}" class="btn main-menu-btn w-100">
+                            Площадка для посадки
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'set_tree_price' %}" class="btn main-menu-btn w-100">
+                            Цена дерева
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'set_tree_quantity' %}" class="btn main-menu-btn w-100">
+                            Количество деревьев
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <p>Вы можете выбрать любой шаг, который хотите выполнить.</p>
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary">Вернуться на главную</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

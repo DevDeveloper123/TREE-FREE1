@@ -1,0 +1,41 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tree Free - Продажа и посадка деревьев{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Продаю и сажаю деревья</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_name" class="form-label">Название услуги</label>
+                        {{ form.name }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_description" class="form-label">Описание услуг</label>
+                        {{ form.description }}
+                        <div class="form-text">Подробно опишите, какие услуги по продаже и посадке деревьев вы предлагаете.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_contact_phone" class="form-label">Контактный телефон</label>
+                        {{ form.contact_phone }}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'home' %}" class="btn btn-outline-primary">Назад</a>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

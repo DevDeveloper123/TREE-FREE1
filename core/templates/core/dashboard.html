@@ -1,0 +1,169 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tree Free - Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h2>Добро пожаловать, {{ user.first_name }}!</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 bg-light">
+                            <div class="card-body text-center">
+                                <h1 class="text-primary">{{ completed_requests_count }}</h1>
+                                <p>Завершенных посадок</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 bg-light">
+                            <div class="card-body text-center">
+                                <h1 class="text-success">{{ total_trees_planted }}</h1>
+                                <p>Деревьев посажено</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 bg-light">
+                            <div class="card-body text-center">
+                                <h1 class="text-info">{{ pending_requests_count }}</h1>
+                                <p>Ожидающих запросов</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100 bg-light">
+                            <div class="card-body text-center">
+                                <h1 class="text-success">{{ user.profile.coins }}</h1>
+                                <p>Ваших коинов</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Мои последние запросы</h3>
+            </div>
+            <div class="card-body">
+                {% if recent_requests %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Дерево</th>
+                                <th>Кол-во</th>
+                                <th>Статус</th>
+                                <th>Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in recent_requests %}
+                            <tr>
+                                <td>{{ request.tree_type.name }}</td>
+                                <td>{{ request.quantity }}</td>
+                                <td>
+                                    {% if request.status == 'pending' %}
+                                    <span class="badge bg-warning">В ожидании</span>
+                                    {% elif request.status == 'approved' %}
+                                    <span class="badge bg-success">Одобрено</span>
+                                    {% elif request.status == 'completed' %}
+                                    <span class="badge bg-primary">Завершено</span>
+                                    {% elif request.status == 'rejected' %}
+                                    <span class="badge bg-danger">Отклонено</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ request.created_at|date:"d.m.Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{% url 'planting_requests' %}" class="btn btn-outline-primary">Посмотреть все запросы</a>
+                </div>
+                {% else %}
+                <p class="text-center">У вас пока нет запросов на посадку деревьев.</p>
+                <div class="text-center">
+                    <a href="{% url 'plant_tree' %}" class="btn btn-primary">Создать запрос</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Мои участки</h3>
+            </div>
+            <div class="card-body">
+                {% if recent_sites %}
+                <div class="row">
+                    {% for site in recent_sites %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <img src="{{ site.image.url }}" class="card-img-top" alt="Участок">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ site.get_site_type_display }}</h5>
+                                <p class="card-text">{{ site.location }}</p>
+                                <p class="text-muted">Добавлен: {{ site.created_at|date:"d.m.Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{% url 'planting_sites' %}" class="btn btn-outline-primary">Посмотреть все участки</a>
+                </div>
+                {% else %}
+                <p class="text-center">У вас пока нет добавленных участков.</p>
+                <div class="text-center">
+                    <a href="{% url 'my_land' %}" class="btn btn-primary">Добавить участок</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h3>Быстрые действия</h3>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'plant_tree' %}" class="btn main-menu-btn w-100">
+                            Посадить дерево
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'my_land' %}" class="btn main-menu-btn w-100">
+                            Добавить участок
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'sell_trees' %}" class="btn main-menu-btn w-100">
+                            Продать деревья
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'profile' %}" class="btn main-menu-btn w-100">
+                            Мой профиль
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

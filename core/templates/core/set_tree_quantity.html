@@ -1,0 +1,81 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tree Free - Установка количества деревьев{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Укажите количество деревьев</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_quantity" class="form-label">Количество деревьев</label>
+                        <div class="input-group">
+                            <button type="button" class="btn btn-outline-primary" id="decreaseBtn">-</button>
+                            <input type="number" name="quantity" min="1" class="form-control text-center" id="id_quantity" value="1" required>
+                            <button type="button" class="btn btn-outline-primary" id="increaseBtn">+</button>
+                        </div>
+                        <div class="form-text">Укажите количество деревьев, которые вы хотите посадить.</div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <input type="range" class="form-range" min="1" max="100" step="1" id="quantityRange" value="1">
+                        <div class="d-flex justify-content-between">
+                            <span>1 шт</span>
+                            <span>100 шт</span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'plant_tree' %}" class="btn btn-outline-primary">Назад</a>
+                        <button type="submit" class="btn btn-primary">Завершить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Управление количеством деревьев
+    const quantityInput = document.getElementById('id_quantity');
+    const quantityRange = document.getElementById('quantityRange');
+    const decreaseBtn = document.getElementById('decreaseBtn');
+    const increaseBtn = document.getElementById('increaseBtn');
+    
+    // Кнопки -/+
+    decreaseBtn.addEventListener('click', function() {
+        let value = parseInt(quantityInput.value);
+        if (value > 1) {
+            quantityInput.value = value - 1;
+            quantityRange.value = quantityInput.value;
+        }
+    });
+    
+    increaseBtn.addEventListener('click', function() {
+        let value = parseInt(quantityInput.value);
+        if (value < 100) {
+            quantityInput.value = value + 1;
+            quantityRange.value = quantityInput.value;
+        }
+    });
+    
+    // Синхронизация слайдера и поля ввода
+    quantityRange.addEventListener('input', function() {
+        quantityInput.value = this.value;
+    });
+    
+    quantityInput.addEventListener('input', function() {
+        if (this.value >= 1 && this.value <= 100) {
+            quantityRange.value = this.value;
+        }
+    });
+</script>
+{% endblock %}
